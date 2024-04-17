@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="2dp">
+
+    <TextView
+        android:id="@+id/highScoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="Рекорд: 0"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp" />
+
+
+    <TextView
+        android:id="@+id/currentLevelText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="Уровень: 1"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="Очки: 0"
+        android:layout_below="@id/currentLevelText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="1dp"/>
+
+    <TextView
+        android:id="@+id/wrongCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_below="@id/scoreText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="1dp"/>
+
+    <TextView
+        android:id="@+id/mathQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:text="What is 6 + 7?"
+        android:layout_below="@id/scoreText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/userAnswerText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp"
+        android:layout_below="@id/mathQuestion"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/checkAnswer"
+        android:layout_width="144dp"
+        android:layout_height="72dp"
+        android:text="Проверить ответ"
+        android:layout_below="@id/userAnswerText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        style="@style/ButtonStyle"/>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="4"
+        android:layout_below="@id/checkAnswer"
+        android:layout_marginTop="20dp">
+
+        <Button android:id="@+id/button1" android:text="1" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button2" android:text="2" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button3" android:text="3" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button4" android:text="4" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button5" android:text="5" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button6" android:text="6" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button7" android:text="7" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button8" android:text="8" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button9" android:text="9" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <!-- Пустое место для выравнивания -->
+        <View android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/button0" android:text="0" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <Button android:id="@+id/buttonDelete" android:text="Del" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+    </GridLayout>
+
+
+
+
+
+
+</RelativeLayout>
