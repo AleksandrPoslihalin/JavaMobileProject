@@ -7,38 +7,123 @@ public class QuestionGenerator {
     private Random rand = new Random();
 
     public Question generateAdditionQuestion(int difficulty_level) {
-        int number1 = rand.nextInt(10 + 2*difficulty_level);
-        int number2 = rand.nextInt(10 + 2*difficulty_level);
-        int answer = number1 + number2;
+        Random rand = new Random();
+        int number1 = rand.nextInt(10 + 2 * difficulty_level);
+        int number2 = rand.nextInt(10 + 2 * difficulty_level);
+        int numericAnswer = number1 + number2; // для арифметического вопроса
         String text = number1 + " + " + number2;
-        return new Question(text, answer);
+
+        // С вероятностью 50% создаем вопрос на сложение или вопрос с неравенством
+        if (rand.nextBoolean()) {
+            // Вопрос на сложение
+            return new Question(text, numericAnswer);
+        } else {
+            // Генерация вопроса с неравенством
+            int offset = (int)(numericAnswer * 0.8); // 20% от ответа
+            int minComparisonValue = Math.max(0, numericAnswer - offset);
+            int maxComparisonValue = numericAnswer + offset;
+            int comparisonNumber = rand.nextInt(maxComparisonValue - minComparisonValue + 1) + minComparisonValue;
+            boolean isComparisonGreater = rand.nextBoolean();
+            String textAnswer;
+            if (isComparisonGreater) {
+                text += " > " + comparisonNumber + "?";
+                textAnswer = (numericAnswer > comparisonNumber) ? "YES" : "NO";
+            } else {
+                text += " < " + comparisonNumber + "?";
+                textAnswer = (numericAnswer < comparisonNumber) ? "YES" : "NO";
+            }
+            return new Question(text, textAnswer);
+        }
     }
+
 
     public Question generateSubtractionQuestion(int difficulty_level) {
         int number1 = rand.nextInt(10 + 2 * difficulty_level);
         int number2 = rand.nextInt(10 + 2 * difficulty_level);
-        int answer = number1 - number2;
-        if(answer < 0) {
+        int numericAnswer = number1 - number2;
+        if(numericAnswer < 0) {
             // Если результат отрицательный, меняем числа местами
-            return new Question(number2 + " - " + number1, number2 - number1);
+            numericAnswer = number2 - number1;
+            int temp = number1;
+            number1 = number2;
+            number2 = temp;
         }
-        return new Question(number1 + " - " + number2, answer);
+        String text = number1 + " - " + number2;
+        if (rand.nextBoolean()) {
+            // Вопрос на сложение
+            return new Question(text, numericAnswer);
+        } else {
+            // Генерация вопроса с неравенством
+            int offset = (int)(numericAnswer * 0.8); // 20% от ответа
+            int minComparisonValue = Math.max(0, numericAnswer - offset);
+            int maxComparisonValue = numericAnswer + offset;
+            int comparisonNumber = rand.nextInt(maxComparisonValue - minComparisonValue + 1) + minComparisonValue;
+            boolean isComparisonGreater = rand.nextBoolean();
+            String textAnswer;
+            if (isComparisonGreater) {
+                text += " > " + comparisonNumber + "?";
+                textAnswer = (numericAnswer > comparisonNumber) ? "YES" : "NO";
+            } else {
+                text += " < " + comparisonNumber + "?";
+                textAnswer = (numericAnswer < comparisonNumber) ? "YES" : "NO";
+            }
+            return new Question(text, textAnswer);
+        }
+
     }
 
     public Question generateMultiplicationQuestion(int difficulty_level) {
         int number1 = rand.nextInt(10 + difficulty_level);
         int number2 = rand.nextInt(10 + difficulty_level);
-        int answer = number1 * number2;
+        int numericAnswer = number1 * number2;
         String text = number1 + " * " + number2;
-        return new Question(text, answer);
+        if (rand.nextBoolean()) {
+            // Вопрос на сложение
+            return new Question(text, numericAnswer);
+        } else {
+            // Генерация вопроса с неравенством
+            int offset = (int)(numericAnswer * 0.8); // 20% от ответа
+            int minComparisonValue = Math.max(0, numericAnswer - offset);
+            int maxComparisonValue = numericAnswer + offset;
+            int comparisonNumber = rand.nextInt(maxComparisonValue - minComparisonValue + 1) + minComparisonValue;
+            boolean isComparisonGreater = rand.nextBoolean();
+            String textAnswer;
+            if (isComparisonGreater) {
+                text += " > " + comparisonNumber + "?";
+                textAnswer = (numericAnswer > comparisonNumber) ? "YES" : "NO";
+            } else {
+                text += " < " + comparisonNumber + "?";
+                textAnswer = (numericAnswer < comparisonNumber) ? "YES" : "NO";
+            }
+            return new Question(text, textAnswer);
+        }
     }
 
     public Question generateDivisionQuestion(int difficulty_level) {
         int number1 = 1 + rand.nextInt(5 + difficulty_level); // Избегаем деления на ноль
-        int answer = 1 + rand.nextInt(5 + difficulty_level);
-        int number2 = number1 * answer; // Для деления число должно делиться без остатка
+        int numericAnswer = 1 + rand.nextInt(5 + difficulty_level);
+        int number2 = number1 * numericAnswer; // Для деления число должно делиться без остатка
         String text = number2 + " / " + number1;
-        return new Question(text, answer);
+        if (rand.nextBoolean()) {
+            // Вопрос на сложение
+            return new Question(text, numericAnswer);
+        } else {
+            // Генерация вопроса с неравенством
+            int offset = (int)(numericAnswer * 0.8); // 20% от ответа
+            int minComparisonValue = Math.max(0, numericAnswer - offset);
+            int maxComparisonValue = numericAnswer + offset;
+            int comparisonNumber = rand.nextInt(maxComparisonValue - minComparisonValue + 1) + minComparisonValue;
+            boolean isComparisonGreater = rand.nextBoolean();
+            String textAnswer;
+            if (isComparisonGreater) {
+                text += " > " + comparisonNumber + "?";
+                textAnswer = (numericAnswer > comparisonNumber) ? "YES" : "NO";
+            } else {
+                text += " < " + comparisonNumber + "?";
+                textAnswer = (numericAnswer < comparisonNumber) ? "YES" : "NO";
+            }
+            return new Question(text, textAnswer);
+        }
     }
 
     public Question generateThreeNumbersNoBracketsQuestion1(int difficulty_level) {

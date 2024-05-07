@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Objects;
 import java.util.Random;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView mathQuestion, correctAnswerText, wrongCountText, userAnswerText, currentLevelText, scoreText;
     private Button checkAnswer;
     private QuestionGenerator questionGenerator;
-    private int correctAnswer, wrongAnswers = 0, currentLevel = 1;
+    private int wrongAnswers = 0, currentLevel = 1;
+    private String correctAnswer;
+    private boolean isTextAnswer;
     private final int MAX_WRONG_ANSWERS = 3;
     private int correctAnswersCount = 0;
     private int score = 0;
@@ -69,8 +73,13 @@ public class MainActivity extends AppCompatActivity {
         int[] buttonIds = new int[] {
                 R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4,
                 R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9,
-                R.id.buttonYes, R.id.buttonNo
         };
+
+        Button buttonYes = findViewById(R.id.buttonYes);
+        Button buttonNo = findViewById(R.id.buttonNo);
+
+        buttonYes.setOnClickListener(v -> userAnswerText.setText("YES")); // Заменяем текст в EditText на "YES"
+        buttonNo.setOnClickListener(v -> userAnswerText.setText("NO")); // Заменяем текст на "NO"
 
         for (int id : buttonIds) {
             findViewById(id).setOnClickListener(listener);
@@ -79,16 +88,43 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.buttonDelete).setOnClickListener(v -> {
             String text = userAnswerText.getText().toString();
             if (!text.isEmpty()) {
-                userAnswerText.setText(text.substring(0, text.length() - 1));
+                userAnswerText.setText("");
             }
         });
     }
 
+    private void updateButtonAccessibility(boolean isTextAnswer) {
+        // Получаем ссылки на кнопки цифр и кнопки YES/NO
+        int[] numericButtonIds = new int[] {
+                R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4,
+                R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9,
+        };
+
+        Button buttonYes = findViewById(R.id.buttonYes);
+        Button buttonNo = findViewById(R.id.buttonNo);
+
+        // Если ожидается текстовый ответ, блокируем цифровые кнопки и разблокируем YES/NO
+        for (int id : numericButtonIds) {
+            Button btn = findViewById(id);
+            btn.setEnabled(!isTextAnswer);
+        }
+
+        buttonYes.setEnabled(isTextAnswer);
+        buttonNo.setEnabled(isTextAnswer);
+    }
+
+
     private void checkAnswer() {
         final Snackbar[] snackbar = new Snackbar[1];
         try {
-            int userAnswer = Integer.parseInt(userAnswerText.getText().toString());
-            if (userAnswer == correctAnswer) {
+            String userAnswer = userAnswerText.getText().toString().trim();  // Получаем ответ пользователя и удаляем пробелы с обеих сторон
+
+            // Проверяем, пустая ли строка
+            if (userAnswer.isEmpty()) {
+                throw new IllegalArgumentException("Введите ответ."); // Выбрасываем исключение, если строка пуста
+            }
+
+            if (Objects.equals(correctAnswer, userAnswer)) {
                 correctAnswersCount++;
                 score += currentLevel;
                 updateScore(score);
@@ -110,34 +146,29 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
                                 intent.putExtra("score", score);
                                 intent.putExtra("level", currentLevel);
-                                intent.putExtra("highScore", highScore);
                                 startActivity(intent);
                                 finish();
                             })
-                            .setCancelable(false) // Пользователь не может отменить/закрыть диалог без нажатия на кнопку
+                            .setCancelable(false)
                             .create();
-
                     dialog.show();
-                }
-                else {
+                } else {
                     new AlertDialog.Builder(this, R.style.CustomDialogStyle)
                             .setMessage("Неверно. Правильный ответ: " + correctAnswer)
-                            .setPositiveButton("OK", (dialog, which) -> {
-                                // Обработчик нажатия кнопки "OK"
-                            })
-                            .setCancelable(false) // Диалоговое окно не исчезнет, пока пользователь не нажмет кнопку
+                            .setPositiveButton("OK", null)
+                            .setCancelable(false)
                             .show();
                 }
-
             }
-        } catch (NumberFormatException e) {
-            Snackbar.make(findViewById(R.id.layoutRoot), "Введите число.", Snackbar.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException e) {
+            Snackbar.make(findViewById(R.id.layoutRoot), e.getMessage(), Snackbar.LENGTH_SHORT).show();
         } finally {
             userAnswerText.setText(""); // Очищаем ввод после проверки
             currentLevelText.setText("Уровень: " + currentLevel);
             scoreText.setText("Очки: " + score);
         }
     }
+
 
 
     private void loadHighScore() {
@@ -174,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+/*
     private void generateNewQuestion() {
         Random rand = new Random();
         Question question = null; // Инициализируем переменную заранее
@@ -235,36 +266,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
             mathQuestion.setText("Решите пример: " + question.getQuestionText() + " = ?");
-            correctAnswer = question.getCorrectAnswer(); // Обновляем правильный ответ на вопрос
+            correctAnswer = question.getAnswer(); // Обновляем правильный ответ на вопрос
+            isTextAnswer = question.isTextAnswer();
 
     }
 
+*/
 
-/*
         private void generateNewQuestion() {
         Random rand = new Random();
-        Question question = null; // Инициализируем переменную заранее
-        int randomNumber;
+        Question question = null;
 
         switch (currentLevel) {
             case 1:
-                question = questionGenerator.generateAdditionQuestion(2);
+                question = questionGenerator.generateDivisionQuestion(currentLevel);
                 break;
 
 
             default:
-                question = questionGenerator.generateAdditionQuestion(currentLevel);
+                question = questionGenerator.generateDivisionQuestion(currentLevel);
                 break;
         }
+        isTextAnswer = question.isTextAnswer();
+        updateButtonAccessibility(isTextAnswer);
+        if (isTextAnswer) {
+            mathQuestion.setText("Верно ли: " + question.getQuestionText());
+        }
+        else {
+            mathQuestion.setText("Решите пример: " + question.getQuestionText() + " = ?");
+        }
+        correctAnswer = question.getAnswer(); // Обновляем правильный ответ на вопрос
 
-        // Обрабатываем случай, если question не инициализирован
-        if (question == null) {
-            question = questionGenerator.generateAdditionQuestion(currentLevel); // Безопасный вариант
         }
 
-        mathQuestion.setText("Решите пример: " + question.getQuestionText() + " = ?");
-        correctAnswer = question.getCorrectAnswer(); // Обновляем правильный ответ на вопрос
-    }
 
-*/
 }

@@ -1,19 +1,32 @@
 package com.example.mobileproject;
 
-class Question {
+public class Question {
     private String questionText;
-    private int correctAnswer;
+    private String answer;
+    private boolean isTextAnswer; // Флаг, указывающий на тип ответа
 
-    public Question(String questionText, int correctAnswer) {
+    public Question(String questionText, int numericAnswer) {
         this.questionText = questionText;
-        this.correctAnswer = correctAnswer;
+        this.answer = String.valueOf(numericAnswer); // Преобразуем числовой ответ в строку
+        this.isTextAnswer = false; // Ответ числовой
     }
+
+    public Question(String questionText, String textAnswer) {
+        this.questionText = questionText;
+        this.answer = textAnswer;
+        this.isTextAnswer = true; // Ответ текстовый
+    }
+
 
     public String getQuestionText() {
         return questionText;
     }
 
-    public int getCorrectAnswer() {
-        return correctAnswer;
+    public String getAnswer() {
+        return answer;
+    }
+
+    public boolean isTextAnswer() {
+        return isTextAnswer;
     }
 }
