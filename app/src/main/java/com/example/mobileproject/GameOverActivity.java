@@ -2,22 +2,27 @@ package com.example.mobileproject;
 import android.os.Bundle;
 import android.view.View;
 import android.content.Intent;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.SharedPreferences;
 
 public class GameOverActivity extends AppCompatActivity {
-    private int highScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_over);
 
         int score = getIntent().getIntExtra("score", 0);
         int level = getIntent().getIntExtra("level", 1);
-        loadHighScore();
+        int highScore = getIntent().getIntExtra("highScore", 0);
+
         TextView highScoreText = findViewById(R.id.highScoreText);
         highScoreText.setText("Рекорд: " + highScore);
 
@@ -28,11 +33,7 @@ public class GameOverActivity extends AppCompatActivity {
         TextView textViewLevel = findViewById(R.id.textViewLevel);
         textViewLevel.setText("Уровень: " + level);
 
-        if (score > highScore) {
-            highScore = score;
-            highScoreText.setText("Рекорд: " + highScore);
-            saveHighScore();
-        }
+
         Button restartButton = findViewById(R.id.buttonRestart);
         restartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,15 +56,5 @@ public class GameOverActivity extends AppCompatActivity {
         });
     }
 
-    private void loadHighScore() {
-        SharedPreferences prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE);
-        highScore = prefs.getInt("HighScore", 0);
-    }
 
-    private void saveHighScore() {
-        SharedPreferences prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("HighScore", highScore);
-        editor.apply();
-    }
 }

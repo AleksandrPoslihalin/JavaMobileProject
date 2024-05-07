@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.MobileProject" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Цвет строки состояния -->
+        <item name="android:statusBarColor">#FFFFFF</item>
+        <!-- Используем стиль для диалоговых окон -->
+        <item name="alertDialogTheme">@style/CustomDialogStyle</item>
     </style>
 
     <style name="Theme.MobileProject" parent="Base.Theme.MobileProject" />

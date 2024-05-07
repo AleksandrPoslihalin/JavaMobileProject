@@ -1,4 +1,6 @@
 package com.example.mobileproject;
+import com.example.mobileproject.Question;
+import com.example.mobileproject.QuestionGenerator;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,11 +13,15 @@ import android.content.SharedPreferences;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.snackbar.Snackbar;
+import android.view.WindowManager;  // Импортируем WindowManager
+import android.view.WindowManager.LayoutParams;  // Импортируем LayoutParams
+import android.util.Log;
+
 
 
 public class MainActivity extends AppCompatActivity {
     private TextView mathQuestion, correctAnswerText, wrongCountText, userAnswerText, currentLevelText, scoreText;
-    private Button checkAnswer; // Если используете Button в коде, нужно добавить импорт import android.widget.Button;
+    private Button checkAnswer;
     private QuestionGenerator questionGenerator;
     private int correctAnswer, wrongAnswers = 0, currentLevel = 1;
     private final int MAX_WRONG_ANSWERS = 3;
@@ -24,8 +30,13 @@ public class MainActivity extends AppCompatActivity {
     private int highScore;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -41,12 +52,24 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.checkAnswer).setOnClickListener(v -> checkAnswer());
         loadHighScore();
     }
+    @Override
+    public void onBackPressed() {
+        // Диалог подтверждения
+        new AlertDialog.Builder(this)
+                .setTitle("Подтверждение выхода")
+                .setMessage("Вы действительно хотите выйти?")
+                .setPositiveButton("Выйти", (dialog, which) -> super.onBackPressed())  // Если пользователь выбирает "Выйти", активность завершается
+                .setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss())  // Если пользователь выбирает "Отмена", диалог закрывается
+                .setCancelable(true)  // Разрешить закрывать диалог по клику за его пределами
+                .show();  // Показать диалог
+    }
 
     private void setupNumericKeyboard() {
         View.OnClickListener listener = v -> userAnswerText.append(((TextView) v).getText());
         int[] buttonIds = new int[] {
                 R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4,
-                R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9
+                R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9,
+                R.id.buttonYes, R.id.buttonNo
         };
 
         for (int id : buttonIds) {
@@ -62,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkAnswer() {
-        final Snackbar[] snackbar = new Snackbar[1]; // Используйте массив для обхода ограничения на fina
+        final Snackbar[] snackbar = new Snackbar[1];
         try {
             int userAnswer = Integer.parseInt(userAnswerText.getText().toString());
             if (userAnswer == correctAnswer) {
@@ -80,13 +103,14 @@ public class MainActivity extends AppCompatActivity {
                 wrongCountText.setText("Неправильные попытки: " + wrongAnswers);
 
                 if (wrongAnswers >= MAX_WRONG_ANSWERS) {
-                    AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                    AlertDialog dialog = new AlertDialog.Builder(MainActivity.this, R.style.CustomDialogStyle)
                             .setTitle("Игра окончена")
                             .setMessage("Неверно. Правильный ответ: " + correctAnswer + "\nВы допустили максимальное количество ошибок.")
                             .setPositiveButton("OK", (dialogInterface, i) -> {
                                 Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
                                 intent.putExtra("score", score);
                                 intent.putExtra("level", currentLevel);
+                                intent.putExtra("highScore", highScore);
                                 startActivity(intent);
                                 finish();
                             })
@@ -96,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     dialog.show();
                 }
                 else {
-                    new AlertDialog.Builder(this)
+                    new AlertDialog.Builder(this, R.style.CustomDialogStyle)
                             .setMessage("Неверно. Правильный ответ: " + correctAnswer)
                             .setPositiveButton("OK", (dialog, which) -> {
                                 // Обработчик нажатия кнопки "OK"
@@ -140,86 +164,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    class Question {
-        private String questionText;
-        private int correctAnswer;
-
-        public Question(String questionText, int correctAnswer) {
-            this.questionText = questionText;
-            this.correctAnswer = correctAnswer;
-        }
-
-        public String getQuestionText() {
-            return questionText;
-        }
-
-        public int getCorrectAnswer() {
-            return correctAnswer;
-        }
-    }
 
 
 
 
-    public class QuestionGenerator {
-
-        private Random rand = new Random();
-
-        public Question generateAdditionQuestion() {
-            int number1 = rand.nextInt(10); // Генерируем число от 0 до 9
-            int number2 = rand.nextInt(10); // Генерируем второе число от 0 до 9
-            int answer = number1 + number2;
-            String text = number1 + " + " + number2;
-            return new Question(text, answer);
-        }
-
-        public Question generateSubtractionQuestion() {
-            int number1 = rand.nextInt(10);
-            int number2 = rand.nextInt(10);
-            int answer = number1 - number2;
-            if(answer < 0) {
-                // Если результат отрицательный, меняем числа местами
-                return new Question(number2 + " - " + number1, number2 - number1);
-            }
-            return new Question(number1 + " - " + number2, answer);
-        }
-
-        public Question generateMultiplicationQuestion() {
-            int number1 = rand.nextInt(10);
-            int number2 = rand.nextInt(10);
-            int answer = number1 * number2;
-            String text = number1 + " * " + number2;
-            return new Question(text, answer);
-        }
-
-        public Question generateDivisionQuestion() {
-            int number1 = 1 + rand.nextInt(9); // Избегаем деления на ноль
-            int answer = 1 + rand.nextInt(10); // Результат деления будет от 1 до 10
-            int number2 = number1 * answer; // Для деления число должно делиться без остатка
-            String text = number2 + " / " + number1;
-            return new Question(text, answer);
-        }
-
-        public Question generateThreeNumbersQuestion() {
-            // Генерация примера с тремя числами без скобок
-            int number1 = rand.nextInt(10);
-            int number2 = rand.nextInt(10);
-            int number3 = rand.nextInt(10);
-            String text = number1 + " + " + number2 + " - " + number3; // Пример: "1 + 2 - 3"
-            int answer = number1 + number2 - number3; // Правильный ответ
-            return new Question(text, answer);
-        }
-
-        public Question generateThreeNumbersWithBracketsQuestion() {
-            // Генерация примера с тремя числами со скобками
-            int number1 = rand.nextInt(10);
-            int number2 = rand.nextInt(10);
-            int number3 = rand.nextInt(10);
-            String text = "(" + number1 + " + " + number2 + ") * " + number3; // Пример: "(1 + 2) * 3"
-            int answer = (number1 + number2) * number3; // Правильный ответ с учетом приоритета операций
-            return new Question(text, answer);
-        }
-    }
 
 
 
@@ -229,33 +177,94 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateNewQuestion() {
         Random rand = new Random();
-        int number1, number2;
-        Question question; // Переменная для хранения вопроса
-        String questionText = "";
+        Question question = null; // Инициализируем переменную заранее
 
         switch (currentLevel) {
             case 1:
-                // Вызываем метод для генерации вопроса со сложением
-                question = questionGenerator.generateAdditionQuestion();
+                question = questionGenerator.generateAdditionQuestion(1);
                 break;
             case 2:
-                // Вызываем метод для генерации вопроса с вычитанием
-                question = questionGenerator.generateSubtractionQuestion();
+                if (rand.nextBoolean()) {
+                    question = questionGenerator.generateAdditionQuestion(1);
+                } else {
+                    question = questionGenerator.generateSubtractionQuestion(1);
+                }
                 break;
             case 3:
-                // Вызываем метод для генерации вопроса с умножением
-                question = questionGenerator.generateMultiplicationQuestion();
+                int randomNumber = rand.nextInt(100); // Генерация случайного числа от 0 до 99
+                if (randomNumber < 70) {
+                    question = questionGenerator.generateMultiplicationQuestion(1);
+                } else if (randomNumber < 85) {
+                    question = questionGenerator.generateAdditionQuestion(1);
+                } else {
+                    question = questionGenerator.generateSubtractionQuestion(1);
+                }
+                break;
+            case 4:
+                randomNumber = rand.nextInt(100);
+                if (randomNumber < 35) {
+                    question = questionGenerator.generateDivisionQuestion(1);
+                } else if (randomNumber < 70) {
+                    question = questionGenerator.generateMultiplicationQuestion(1);
+                } else if (randomNumber < 85) {
+                    question = questionGenerator.generateAdditionQuestion(1);
+                } else {
+                    question = questionGenerator.generateSubtractionQuestion(1);
+                }
                 break;
             default:
-                // Вызываем метод для генерации вопроса с делением
-                question = questionGenerator.generateDivisionQuestion();
+                randomNumber = rand.nextInt(100);
+                if (randomNumber < 12) {
+                    question = questionGenerator.generateAdditionQuestion(currentLevel - 4);
+                } else if (randomNumber < 24) {
+                    question = questionGenerator.generateSubtractionQuestion(currentLevel - 4);
+                } else if (randomNumber < 36) {
+                    question = questionGenerator.generateMultiplicationQuestion(currentLevel - 4);
+                } else if (randomNumber < 48) {
+                    question = questionGenerator.generateDivisionQuestion(currentLevel - 4);
+                } else if (randomNumber < 60) {
+                    question = questionGenerator.generateThreeNumbersNoBracketsQuestion1(currentLevel - 4);
+                } else if (randomNumber < 72) {
+                    question = questionGenerator.generateThreeNumbersNoBracketsQuestion2(currentLevel - 4);
+                } else if (randomNumber < 84) {
+                    question = questionGenerator.generateThreeNumbersWithBracketsQuestion1(currentLevel - 4);
+                } else {
+                    question = questionGenerator.generateThreeNumbersWithBracketsQuestion2(currentLevel - 4);
+                }
                 break;
         }
 
-        // Обновление UI с новым вопросом
+            mathQuestion.setText("Решите пример: " + question.getQuestionText() + " = ?");
+            correctAnswer = question.getCorrectAnswer(); // Обновляем правильный ответ на вопрос
+
+    }
+
+
+/*
+        private void generateNewQuestion() {
+        Random rand = new Random();
+        Question question = null; // Инициализируем переменную заранее
+        int randomNumber;
+
+        switch (currentLevel) {
+            case 1:
+                question = questionGenerator.generateAdditionQuestion(2);
+                break;
+
+
+            default:
+                question = questionGenerator.generateAdditionQuestion(currentLevel);
+                break;
+        }
+
+        // Обрабатываем случай, если question не инициализирован
+        if (question == null) {
+            question = questionGenerator.generateAdditionQuestion(currentLevel); // Безопасный вариант
+        }
+
         mathQuestion.setText("Решите пример: " + question.getQuestionText() + " = ?");
         correctAnswer = question.getCorrectAnswer(); // Обновляем правильный ответ на вопрос
     }
 
-
+*/
 }

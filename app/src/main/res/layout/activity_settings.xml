@@ -3,23 +3,28 @@
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background1"
     android:padding="16dp">
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/resetHighScoreButton"
         android:layout_width="144dp"
         android:layout_height="72dp"
         android:text="Сбросить рекорд"
-        android:layout_centerInParent="true" />
+        android:textColor="#FFFFFF"
+        android:layout_centerInParent="true"
+        style="@style/ButtonStyle"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/backButton"
         android:layout_width="144dp"
         android:layout_height="72dp"
         android:text="Назад в меню"
+        android:textColor="#FFFFFF"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="40dp"/>
+        android:layout_marginBottom="40dp"
+        style="@style/ButtonStyle"/>
 
 </RelativeLayout>

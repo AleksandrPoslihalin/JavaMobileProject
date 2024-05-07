@@ -2,13 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/gradient_background3">
     <TextView
         android:id="@+id/highScoreText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:text="Рекорд: 0"
+        android:textColor="#FFFFFF"
         android:layout_alignParentTop="true"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp" />
@@ -18,47 +19,56 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="К сожалению, вы проиграли!"
+        android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginTop="200dp"
+    />
 
     <TextView
         android:id="@+id/textViewScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Очки: "
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:layout_below="@+id/textViewGameOverMessage"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:id="@+id/textViewLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Уровень: "
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:layout_below="@+id/textViewScore"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonRestart"
         android:layout_width="144dp"
         android:layout_height="72dp"
-        android:text="Restart"
+        android:text="Играть заново"
+        android:textColor="#FFFFFF"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/textViewLevel"
-        android:layout_marginTop="20dp" />
-    <Button
+        android:layout_marginTop="50dp"
+        style="@style/ButtonCheckAnswerStyle"/>
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonMenu"
         android:layout_width="144dp"
         android:layout_height="72dp"
         android:text="Меню"
+        android:textColor="#FFFFFF"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/buttonRestart"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        style="@style/ButtonCheckAnswerStyle"/>
+
 
 
 </RelativeLayout>

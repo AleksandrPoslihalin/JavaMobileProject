@@ -3,6 +3,7 @@ package com.example.mobileproject;
 import android.os.Bundle;
 import android.view.View;
 import android.content.Intent;
+import android.view.WindowManager;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.TextView;
@@ -13,6 +14,10 @@ public class MainMenuActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         loadHighScore();

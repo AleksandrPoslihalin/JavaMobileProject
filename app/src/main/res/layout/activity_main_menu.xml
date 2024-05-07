@@ -1,32 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background1"
     android:padding="16dp">
+
+    <TextView
+        android:id="@+id/appTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arithmetic Trainer"
+        android:textSize="24sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
 
     <TextView
         android:id="@+id/highScoreTextMainMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:layout_alignParentTop="true"
+        android:textColor="#FFFFFF"
+        android:layout_below="@id/appTitle"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Рекорд: 0" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonPlay"
         android:layout_width="144dp"
         android:layout_height="72dp"
         android:text="Играть"
-        android:layout_centerInParent="true" />
+        android:textColor="#FFFFFF"
+        android:layout_centerInParent="true"
+        style="@style/ButtonStyle"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonSettings"
         android:layout_width="144dp"
         android:layout_height="72dp"
         android:text="Настройки"
+        android:textColor="#FFFFFF"
         android:layout_below="@id/buttonPlay"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        style="@style/ButtonStyle"/>
 </RelativeLayout>

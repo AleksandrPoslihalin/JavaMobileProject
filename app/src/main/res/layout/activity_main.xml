@@ -3,6 +3,7 @@
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/schoolboard"
     android:padding="2dp">
 
     <TextView
@@ -10,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+        android:textColor="#FFFFFF"
         android:text="Рекорд: 0"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
@@ -22,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+        android:textColor="#FFFFFF"
         android:text="Уровень: 1"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -31,6 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+        android:textColor="#FFFFFF"
         android:text="Очки: 0"
         android:layout_below="@id/currentLevelText"
         android:layout_centerHorizontal="true"
@@ -41,6 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+        android:textColor="#FFFFFF"
         android:layout_below="@id/scoreText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="1dp"/>
@@ -50,6 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
+        android:textColor="#FFFFFF"
         android:text="What is 6 + 7?"
         android:layout_below="@id/scoreText"
         android:layout_centerHorizontal="true"
@@ -66,17 +72,19 @@
         android:layout_below="@id/mathQuestion"
         android:layout_marginTop="20dp"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/checkAnswer"
-        android:layout_width="144dp"
+        android:layout_width="200dp"
         android:layout_height="72dp"
         android:text="Проверить ответ"
+        android:textColor="#FFFFFF"
         android:layout_below="@id/userAnswerText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        style="@style/ButtonStyle"/>
+        style="@style/ButtonCheckAnswerStyle"/>
 
     <GridLayout
+        android:id="@+id/gridNumbers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="3"
@@ -84,21 +92,44 @@
         android:layout_below="@id/checkAnswer"
         android:layout_marginTop="20dp">
 
-        <Button android:id="@+id/button1" android:text="1" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button2" android:text="2" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button3" android:text="3" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button4" android:text="4" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button5" android:text="5" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button6" android:text="6" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button7" android:text="7" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button8" android:text="8" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button9" android:text="9" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button1" android:text="1" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button2" android:text="2" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button3" android:text="3" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button4" android:text="4" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button5" android:text="5" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button6" android:text="6" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button7" android:text="7" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button8" android:text="8" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button9" android:text="9" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
         <!-- Пустое место для выравнивания -->
         <View android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/button0" android:text="0" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
-        <Button android:id="@+id/buttonDelete" android:text="Del" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/button0" android:text="0" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/buttonDelete" android:text="Del" android:layout_width="0dp" android:layout_height="72dp" android:layout_columnWeight="1" />
     </GridLayout>
+    <GridLayout
+        android:id="@+id/gridYesNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="1"
+        android:layout_below="@id/gridNumbers"
+        android:layout_marginTop="0dp">
 
+        <!-- Две большие кнопки "YES" и "NO" -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonYes"
+            android:text="YES"
+            android:layout_width="0dp"
+            android:layout_height="72dp"
+            android:layout_columnWeight="1" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonNo"
+            android:text="NO"
+            android:layout_width="0dp"
+            android:layout_height="72dp"
+            android:layout_columnWeight="1" />
+    </GridLayout>
 
 
 
