@@ -4,20 +4,18 @@ import com.example.mobileproject.QuestionGenerator;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.Objects;
 import java.util.Random;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.snackbar.Snackbar;
-import android.view.WindowManager;  // Импортируем WindowManager
-import android.view.WindowManager.LayoutParams;  // Импортируем LayoutParams
-import android.util.Log;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
+import android.os.CountDownTimer;
+import java.util.Locale;
 
 
 
@@ -32,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
     private int correctAnswersCount = 0;
     private int score = 0;
     private int highScore;
-
+    private CountDownTimer countDownTimer;
+    private int timeForAnswer = 20000;
+    private long timeLeftInMillis = timeForAnswer;
 
 
     @Override
@@ -41,19 +41,18 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState); // Вызов метода onCreate() из класса AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mathQuestion = findViewById(R.id.mathQuestion);
         wrongCountText = findViewById(R.id.wrongCountText);
-        userAnswerText = findViewById(R.id.userAnswerText); // TextView для показа введённого пользователем числа
+        userAnswerText = findViewById(R.id.userAnswerText);
         currentLevelText = findViewById(R.id.currentLevelText);
         scoreText = findViewById(R.id.scoreText);
         setupNumericKeyboard(); // Установка обработчиков для кнопок клавиатуры
         questionGenerator = new QuestionGenerator();
-        generateNewQuestion(); // Генерация первого вопроса
-
-        findViewById(R.id.checkAnswer).setOnClickListener(v -> checkAnswer());
+        generateNewQuestion();
+        findViewById(R.id.checkAnswer).setOnClickListener(v -> checkAnswer(false));
         loadHighScore();
     }
     @Override
@@ -69,29 +68,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupNumericKeyboard() {
-        View.OnClickListener listener = v -> userAnswerText.append(((TextView) v).getText());
-        int[] buttonIds = new int[] {
+        // Общий слушатель для кнопок с числами
+        View.OnClickListener numberListener = v -> userAnswerText.append(((Button) v).getText());
+
+        // Слушатель для кнопок YES и NO, который заменяет текст в userAnswerText
+        View.OnClickListener yesNoListener = v -> userAnswerText.setText(((Button) v).getText());
+
+        // Массив ID кнопок с числами
+        int[] buttonIds = {
                 R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4,
-                R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9,
+                R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9
         };
 
-        Button buttonYes = findViewById(R.id.buttonYes);
-        Button buttonNo = findViewById(R.id.buttonNo);
-
-        buttonYes.setOnClickListener(v -> userAnswerText.setText("YES")); // Заменяем текст в EditText на "YES"
-        buttonNo.setOnClickListener(v -> userAnswerText.setText("NO")); // Заменяем текст на "NO"
-
+        // Установка слушателя для кнопок с числами
         for (int id : buttonIds) {
-            findViewById(id).setOnClickListener(listener);
+            findViewById(id).setOnClickListener(numberListener);
         }
 
+        // Установка слушателей для кнопок YES и NO
+        findViewById(R.id.buttonYes).setOnClickListener(yesNoListener);
+        findViewById(R.id.buttonNo).setOnClickListener(yesNoListener);
+
+        // Установка слушателя для кнопки удаления
         findViewById(R.id.buttonDelete).setOnClickListener(v -> {
             String text = userAnswerText.getText().toString();
             if (!text.isEmpty()) {
-                userAnswerText.setText("");
+                userAnswerText.setText(""); // Очищаем весь текст, а не удаляем по одному символу
             }
         });
     }
+
 
     private void updateButtonAccessibility(boolean isTextAnswer) {
         // Получаем ссылки на кнопки цифр и кнопки YES/NO
@@ -114,30 +120,67 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void checkAnswer() {
+    private void checkAnswer(boolean isTimerExpired) {
+        String userAnswer = userAnswerText.getText().toString().trim();  // Получаем ответ пользователя и удаляем пробелы с обеих сторон
+        if (!userAnswer.isEmpty()) {
+            countDownTimer.cancel(); // Остановить таймер при проверке ответа
+        }
         final Snackbar[] snackbar = new Snackbar[1];
         try {
-            String userAnswer = userAnswerText.getText().toString().trim();  // Получаем ответ пользователя и удаляем пробелы с обеих сторон
 
-            // Проверяем, пустая ли строка
-            if (userAnswer.isEmpty()) {
-                throw new IllegalArgumentException("Введите ответ."); // Выбрасываем исключение, если строка пуста
+            // Проверяем, пустая ли строка и истекло ли время
+            if (userAnswer.isEmpty() && isTimerExpired) {
+                // Показываем диалог о том, что время истекло
+                wrongAnswers++;
+                wrongCountText.setText("Неправильные попытки: " + wrongAnswers);
+                if (wrongAnswers >= MAX_WRONG_ANSWERS) {
+                    AlertDialog dialog = new AlertDialog.Builder(MainActivity.this, R.style.CustomDialogStyle)
+                            .setTitle("Игра окончена")
+                            .setMessage("Время вышло. Правильный ответ был: " + correctAnswer + "\nВы допустили максимальное количество ошибок.")
+                            .setPositiveButton("OK", (dialogInterface, i) -> {
+                                Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
+                                intent.putExtra("score", score);
+                                intent.putExtra("level", currentLevel);
+                                intent.putExtra("highScore", highScore);
+                                startActivity(intent);
+                                finish();
+                            })
+                            .setCancelable(false)
+                            .create();
+                    dialog.show();
+                }
+                else {
+                    new AlertDialog.Builder(MainActivity.this, R.style.CustomDialogStyle)
+                            .setMessage("Время вышло! Правильный ответ был: " + correctAnswer)
+                            .setPositiveButton("OK", (dialog, which) -> generateNewQuestion())
+                            .setCancelable(false)
+                            .show();
+                    return;
+                }
             }
 
-            if (Objects.equals(correctAnswer, userAnswer)) {
+            // Обычная проверка ответа
+            if (userAnswer.isEmpty()) {
+                throw new IllegalArgumentException("Введите ответ."); // Выбрасываем исключение, если строка пуста
+            } else if (Objects.equals(correctAnswer, userAnswer)) {
                 correctAnswersCount++;
                 score += currentLevel;
                 updateScore(score);
                 snackbar[0] = Snackbar.make(findViewById(R.id.layoutRoot), "Правильно!", Snackbar.LENGTH_SHORT);
                 snackbar[0].show();
+
                 if (correctAnswersCount % 5 == 0) {
                     currentLevel++;
+                    if (timeForAnswer > 5000 && currentLevel > 5) {
+                        timeForAnswer -= 1000;
+                    }
                 }
+                currentLevelText.setText("Уровень: " + currentLevel);
+                scoreText.setText("Очки: " + score);
                 generateNewQuestion();
             } else {
                 wrongAnswers++;
                 wrongCountText.setText("Неправильные попытки: " + wrongAnswers);
-
                 if (wrongAnswers >= MAX_WRONG_ANSWERS) {
                     AlertDialog dialog = new AlertDialog.Builder(MainActivity.this, R.style.CustomDialogStyle)
                             .setTitle("Игра окончена")
@@ -146,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
                                 intent.putExtra("score", score);
                                 intent.putExtra("level", currentLevel);
+                                intent.putExtra("highScore", highScore);
                                 startActivity(intent);
                                 finish();
                             })
@@ -154,20 +198,18 @@ public class MainActivity extends AppCompatActivity {
                     dialog.show();
                 } else {
                     new AlertDialog.Builder(this, R.style.CustomDialogStyle)
-                            .setMessage("Неверно. Правильный ответ: " + correctAnswer)
-                            .setPositiveButton("OK", null)
+                            .setMessage("Неверно! Правильный ответ был: " + correctAnswer)
+                            .setPositiveButton("OK", (dialog, which) -> generateNewQuestion())
                             .setCancelable(false)
                             .show();
                 }
             }
         } catch (IllegalArgumentException e) {
             Snackbar.make(findViewById(R.id.layoutRoot), e.getMessage(), Snackbar.LENGTH_SHORT).show();
-        } finally {
-            userAnswerText.setText(""); // Очищаем ввод после проверки
-            currentLevelText.setText("Уровень: " + currentLevel);
-            scoreText.setText("Очки: " + score);
+        } finally {userAnswerText.setText(""); // Очищаем ввод после проверки
         }
     }
+
 
 
 
@@ -196,6 +238,47 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    private void startTimer() {
+        countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+            public void onTick(long millisUntilFinished) {
+                timeLeftInMillis = millisUntilFinished;
+                updateCountDownText();
+            }
+
+            public void onFinish() {
+                checkAnswer(true);
+            }
+        }.start();
+    }
+
+    private void updateCountDownText() {
+        TextView timerTextView = findViewById(R.id.timerTextView);
+        int minutes = (int) (timeLeftInMillis / 1000) / 60;
+        int seconds = (int) (timeLeftInMillis / 1000) % 60;
+        timerTextView.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
+    }
+
+    private void resetTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        timeLeftInMillis = timeForAnswer; // Сбросить время до начального
+        startTimer();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadHighScore(); // Перезагружаем рекорд когда активность возобновляется
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+    }
 
 
 
@@ -203,10 +286,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-/*
     private void generateNewQuestion() {
+        resetTimer();
         Random rand = new Random();
         Question question = null; // Инициализируем переменную заранее
 
@@ -265,15 +346,21 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
+        isTextAnswer = question.isTextAnswer();
+        updateButtonAccessibility(isTextAnswer);
+        if (isTextAnswer) {
+            mathQuestion.setText("Верно ли: " + question.getQuestionText());
+        }
+        else {
             mathQuestion.setText("Решите пример: " + question.getQuestionText() + " = ?");
-            correctAnswer = question.getAnswer(); // Обновляем правильный ответ на вопрос
-            isTextAnswer = question.isTextAnswer();
+        }
+        correctAnswer = question.getAnswer(); // Обновляем правильный ответ на вопрос
 
     }
 
-*/
 
-        private void generateNewQuestion() {
+
+       /* private void generateNewQuestion() {
         Random rand = new Random();
         Question question = null;
 
@@ -299,5 +386,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-
+*/
 }
